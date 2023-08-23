@@ -60,7 +60,7 @@ public class EventHandlers {
                 return ActionResult.PASS;
             }
 
-            if (GetOffMyLawn.CONFIG.allowedEntityInteraction.contains(Registries.ENTITY_TYPE.getId(entity.getType()))
+            if (GetOffMyLawn.CONFIG.canInteract(entity)
                     || entity.getType().isIn(GOMLTags.ALLOWED_INTERACTIONS_ENTITY)) {
                 return ActionResult.PASS;
             }
@@ -118,7 +118,7 @@ public class EventHandlers {
             if (!(playerEntity.getStackInHand(hand).getItem() instanceof BlockItem)) {
                 var blockState = world.getBlockState(blockHitResult.getBlockPos());
 
-                if (GetOffMyLawn.CONFIG.allowedBlockInteraction.contains(Registries.BLOCK.getId(blockState.getBlock())) || blockState.isIn(GOMLTags.ALLOWED_INTERACTIONS_BLOCKS)) {
+                if (GetOffMyLawn.CONFIG.canInteract(blockState.getBlock()) || blockState.isIn(GOMLTags.ALLOWED_INTERACTIONS_BLOCKS)) {
                     return ActionResult.PASS;
                 }
             }

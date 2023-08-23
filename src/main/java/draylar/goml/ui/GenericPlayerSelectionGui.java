@@ -1,11 +1,14 @@
 package draylar.goml.ui;
 
 import com.mojang.authlib.GameProfile;
+import draylar.goml.api.group.PlayerGroupProvider;
 import draylar.goml.registry.GOMLTextures;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import net.minecraft.item.Items;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.ApiStatus;
@@ -28,13 +31,20 @@ public class GenericPlayerSelectionGui extends PagedGui {
         this.onClick = onClick;
         this.playerManager = Objects.requireNonNull(player.getServer()).getPlayerManager();
         this.setTitle(title);
+    }
+
+    public void updateAndOpen() {
         this.updateDisplay();
         this.open();
     }
 
     @Override
     protected int getPageAmount() {
-        return playerManager.getCurrentPlayerCount() / PAGE_SIZE;
+        return this.getContentAmount() / PAGE_SIZE;
+    }
+
+    protected int getContentAmount() {
+        return this.cachedPlayers.size();
     }
 
     @Override
@@ -45,6 +55,16 @@ public class GenericPlayerSelectionGui extends PagedGui {
                 list.add(p.getGameProfile());
             }
         }
+
+        for (var group : PlayerGroupProvider.getAllGroups(this.player)) {
+            for (var member : group.getMembers()) {
+                if (!list.contains(member.profile()) && this.shouldDisplay.test(member.profile())) {
+                    list.add(member.profile());
+                }
+            }
+        }
+
+
         list.sort(Comparator.comparing((player) -> player.getName()));
         this.cachedPlayers = list;
         super.updateDisplay();
@@ -52,19 +72,34 @@ public class GenericPlayerSelectionGui extends PagedGui {
 
     @Override
     protected DisplayElement getElement(int id) {
-       if (this.cachedPlayers.size() > id) {
-           var player = this.cachedPlayers.get(id);
-           return DisplayElement.of(
-                   new GuiElementBuilder(Items.PLAYER_HEAD)
-                           .setName(Text.literal(player.getName()))
-                           .setSkullOwner(player, null)
-                           .setCallback((x, y, z) -> {
-                       playClickSound(this.player);
-                       this.onClick.accept(player);
-                       this.close(this.closeCallback != null);
-                   })
-           );
-       }
+        return this.getPlayerElement(id);
+    }
+
+    protected DisplayElement getPlayerElement(int id) {
+        if (this.cachedPlayers.size() > id) {
+            var player = this.cachedPlayers.get(id);
+            var b = new GuiElementBuilder(Items.PLAYER_HEAD)
+                    .setName(Text.literal(player.getName()))
+                    .setSkullOwner(player, null)
+                    .setCallback((x, y, z) -> {
+                        playClickSound(this.player);
+                        this.onClick.accept(player);
+                        this.close(this.closeCallback != null);
+                    });
+
+            var x = PlayerGroupProvider.getShared(this.player, player.getId());
+
+            if (!x.isEmpty()) {
+                b.addLoreLine(Text.translatable("text.goml.gui.shared_groups").formatted(Formatting.GOLD));
+
+                for (var g : x) {
+                    b.addLoreLine(Text.literal("- ").append(g.fullDisplayName()).formatted(Formatting.GRAY));
+                }
+            }
+
+
+            return DisplayElement.of(b);
+        }
 
         return DisplayElement.empty();
     }

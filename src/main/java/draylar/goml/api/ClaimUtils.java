@@ -298,7 +298,7 @@ public class ClaimUtils {
             // Remove claim
             GetOffMyLawn.CLAIM.get(world).getClaims().entries().forEach(entry -> {
                 if (entry.getValue() == claim) {
-                    GetOffMyLawn.CLAIM.get(world).remove(entry.getValue());
+                    claim.destroy();
                 }
             });
 

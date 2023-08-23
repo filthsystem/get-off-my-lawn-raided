@@ -7,10 +7,12 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import draylar.goml.api.GomlProtectionProvider;
 import draylar.goml.cca.ClaimComponent;
 import draylar.goml.cca.WorldClaimComponent;
+import draylar.goml.compat.ArgonautsCompat;
 import draylar.goml.other.CardboardWarning;
 import draylar.goml.other.ClaimCommand;
 import draylar.goml.config.GOMLConfig;
 import draylar.goml.other.PlaceholdersReg;
+import draylar.goml.other.VanillaTeamGroups;
 import draylar.goml.registry.GOMLBlocks;
 import draylar.goml.registry.GOMLEntities;
 import draylar.goml.registry.GOMLItems;
@@ -20,6 +22,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -71,6 +74,11 @@ public class GetOffMyLawn implements ModInitializer, WorldComponentInitializer {
                 x.tick(world);
             });
         });
+
+        VanillaTeamGroups.init();
+        if (FabricLoader.getInstance().isModLoaded("argonauts")) {
+            ArgonautsCompat.init();
+        }
 
         ServerChunkEvents.CHUNK_LOAD.register((world, chunk) -> {
             CLAIM.get(world).getClaims().entries().filter(x -> {

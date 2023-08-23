@@ -92,6 +92,7 @@
   "text.goml.gui.force_field.player_list": "Effected Players...",
   "text.goml.gui.force_field.whitelist_mode": "Whitelist Mode: %s",
   "text.goml.gui.force_field.add_player.title": "Add players to list",
+  "text.goml.gui.shared_groups": "Shared Groups:",
 
   "text.goml.mode.everyone": "Everyone",
   "text.goml.mode.trusted": "Trusted Only",
@@ -153,5 +154,11 @@
   "text.goml.admin_mode.disabled": "Disabled Admin Mode! You can no longer modify claims of other players!",
 
   "text.goml.changed_greeting": "Your claim's greeting has been changed to: %s",
-  "text.goml.disabled_augment": "This item is disabled!"
+  "text.goml.disabled_augment": "This item is disabled!",
+
+  "text.goml.vanilla_team.display": "Team: %s",
+  "text.goml.vanilla_team.name": "Minecraft Team",
+
+  "text.goml.argonauts.guild_type.display": "Guild: %s",
+  "text.goml.argonauts.guild_type.name": "Argonaut Guild"
 }

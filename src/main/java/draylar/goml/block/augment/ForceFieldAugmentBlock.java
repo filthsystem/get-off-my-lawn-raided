@@ -221,9 +221,9 @@ public class ForceFieldAugmentBlock extends ClaimAugmentBlock {
                             new GenericPlayerSelectionGui(
                                     this.player,
                                     Text.translatable("text.goml.gui.force_field.add_player.title"),
-                                    (p) -> !this.claim.hasPermission(p.getId()) && !this.claim.getData(UUID_KEY).contains(p.getId()),
+                                    (p) -> !this.claim.hasDirectPermission(p.getId()) && !this.claim.getData(UUID_KEY).contains(p.getId()),
                                     (p) -> this.claim.getData(UUID_KEY).add(p.getId()),
-                                    this::refreshOpen);
+                                    this::refreshOpen).updateAndOpen();
                         }));
                 default -> super.getNavElement(id);
             };

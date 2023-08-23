@@ -1,6 +1,9 @@
 package draylar.goml.api;
 
+import draylar.goml.GetOffMyLawn;
 import draylar.goml.api.event.ClaimEvents;
+import draylar.goml.api.group.PlayerGroup;
+import draylar.goml.api.group.PlayerGroupProvider;
 import draylar.goml.block.ClaimAnchorBlock;
 import draylar.goml.block.entity.ClaimAnchorBlockEntity;
 import draylar.goml.registry.GOMLAugments;
@@ -12,14 +15,10 @@ import draylar.goml.ui.ClaimPlayerListGui;
 import draylar.goml.ui.PagedGui;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandlerType;
@@ -31,7 +30,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -46,6 +44,7 @@ public class Claim {
     public static final String POSITION_KEY = "Pos";
     public static final String OWNERS_KEY = "Owners";
     public static final String TRUSTED_KEY = "Trusted";
+    public static final String TRUSTED_GROUP_KEY = "TrustedGroups";
     public static final String ICON_KEY = "Icon";
     public static final String TYPE_KEY = "Type";
     public static final String AUGMENTS_KEY = "Augments";
@@ -54,6 +53,11 @@ public class Claim {
 
     private final Set<UUID> owners = new HashSet<>();
     private final Set<UUID> trusted = new HashSet<>();
+    @Nullable
+    private Set<PlayerGroup> trustedGroups;
+
+    private final MinecraftServer server;
+    private final Set<PlayerGroup.Key> trustedGroupKeys = new HashSet<>();
     private final BlockPos origin;
     private ClaimAnchorBlock type = GOMLBlocks.MAKESHIFT_CLAIM_ANCHOR.getFirst();
     private Identifier world;
@@ -69,7 +73,8 @@ public class Claim {
     private boolean destroyed = false;
 
     @ApiStatus.Internal
-    public Claim(Set<UUID> owners, Set<UUID> trusted, BlockPos origin) {
+    public Claim(MinecraftServer server, Set<UUID> owners, Set<UUID> trusted, BlockPos origin) {
+        this.server = server;
         this.owners.addAll(owners);
         this.trusted.addAll(trusted);
         this.origin = origin;
@@ -96,6 +101,16 @@ public class Claim {
     }
 
     public boolean hasPermission(UUID uuid) {
+        for (var group : this.getGroups()) {
+            if (group.isPartOf(uuid)) {
+                return true;
+            }
+        }
+        return hasDirectPermission(uuid);
+    }
+
+
+    public boolean hasDirectPermission(UUID uuid) {
         return owners.contains(uuid) || trusted.contains(uuid);
     }
 
@@ -107,8 +122,18 @@ public class Claim {
         trusted.add(uuid);
     }
 
+    public void trust(PlayerGroup group) {
+        getGroups().add(group);
+        group.addClaim(this);
+    }
+
     public void untrust(PlayerEntity player) {
         trusted.remove(player.getUuid());
+    }
+
+    public void untrust(PlayerGroup group) {
+        getGroups().remove(group);
+        group.removeClaim(this);
     }
 
     public void untrust(UUID uuid) {
@@ -156,18 +181,34 @@ public class Claim {
 
         // collect owner UUIDs into list
         NbtList ownersTag = new NbtList();
-        owners.forEach(ownerUUID -> {
+        for (UUID ownerUUID : owners) {
             ownersTag.add(NbtHelper.fromUuid(ownerUUID));
-        });
+        }
 
         // collect trusted UUIDs into list
         NbtList trustedTag = new NbtList();
-        trusted.forEach(trustedUUID -> {
+        for (UUID trustedUUID : trusted) {
             trustedTag.add(NbtHelper.fromUuid(trustedUUID));
-        });
+        }
 
+        // collect trusted UUIDs into list
+        NbtList trustedGroupsTag = new NbtList();
+        if (this.trustedGroups != null) {
+            for (var group : this.trustedGroups) {
+                if (group.canSave()) {
+                    var id = group.getKey();
+                    if (id != null) {
+                        trustedGroupsTag.add(NbtString.of(id.compact()));
+                    }
+                }
+            }
+        }
+        for (var group: this.trustedGroupKeys) {
+            trustedGroupsTag.add(NbtString.of(group.compact()));
+        }
         nbt.put(OWNERS_KEY, ownersTag);
         nbt.put(TRUSTED_KEY, trustedTag);
+        nbt.put(TRUSTED_GROUP_KEY, trustedGroupsTag);
         nbt.putLong(POSITION_KEY, origin.asLong());
         if (this.icon != null) {
             nbt.put(ICON_KEY, this.icon.writeNbt(new NbtCompound()));
@@ -205,36 +246,32 @@ public class Claim {
         return nbt;
     }
 
-    @Deprecated
-    public static Claim fromNbt(NbtCompound nbt) {
-        return fromNbt(nbt, 0);
-    }
 
-
-        /**
-         * Uses the top level information in the given {@link NbtCompound} to construct a {@link Claim}.
-         *
-         * <p>This method expects to find the following tags at the top level of the tag:
-         * <ul>
-         * <li>"Owners" - {@link UUID}s of claim owners
-         * <li>"Pos" - origin {@link BlockPos} of claim
-         *
-         * @param nbt  tag to deserialize information from
-         * @param version
-         * @return  {@link Claim} instance with information from tag
-         */
-    public static Claim fromNbt(NbtCompound nbt, int version) {
+    @ApiStatus.Internal
+    public static Claim fromNbt(MinecraftServer server, NbtCompound nbt, int version) {
         // Collect UUID of owners
         Set<UUID> ownerUUIDs = new HashSet<>();
-        NbtList ownersTag = nbt.getList(OWNERS_KEY, NbtType.INT_ARRAY);
-        ownersTag.forEach(ownerUUID -> ownerUUIDs.add(NbtHelper.toUuid(ownerUUID)));
+        for (NbtElement ownerUUID : nbt.getList(OWNERS_KEY, NbtElement.INT_ARRAY_TYPE)) {
+            ownerUUIDs.add(NbtHelper.toUuid(ownerUUID));
+        }
 
         // Collect UUID of trusted
         Set<UUID> trustedUUIDs = new HashSet<>();
-        NbtList trustedTag = nbt.getList(TRUSTED_KEY, NbtType.INT_ARRAY);
-        trustedTag.forEach(trustedUUID -> trustedUUIDs.add(NbtHelper.toUuid(trustedUUID)));
+        for (NbtElement trustedUUID : nbt.getList(TRUSTED_KEY, NbtElement.INT_ARRAY_TYPE)) {
+            trustedUUIDs.add(NbtHelper.toUuid(trustedUUID));
+        }
 
-        var claim = new Claim(ownerUUIDs, trustedUUIDs, BlockPos.fromLong(nbt.getLong(POSITION_KEY)));
+        var claim = new Claim(server, ownerUUIDs, trustedUUIDs, BlockPos.fromLong(nbt.getLong(POSITION_KEY)));
+
+        for (var nbtId : nbt.getList(OWNERS_KEY, NbtElement.STRING_TYPE)) {
+            var id = PlayerGroup.Key.of(nbtId.asString());
+            if (id != null) {
+                var group = PlayerGroupProvider.getGroup(server, id);
+                if (group != null) {
+                    claim.trust(group);
+                }
+            }
+        }
 
         if (nbt.contains(ICON_KEY, NbtElement.COMPOUND_TYPE)) {
             claim.icon = ItemStack.fromNbt(nbt.getCompound(ICON_KEY));
@@ -272,6 +309,10 @@ public class Claim {
             if (pos != null && type != null) {
                 claim.augments.put(pos, type);
             }
+        }
+
+        for (var string : nbt.getList(TRUSTED_GROUP_KEY, NbtElement.STRING_TYPE)) {
+            claim.trustedGroupKeys.add(PlayerGroup.Key.of(string.asString()));
         }
 
         for (var augment : claim.augments.entrySet()) {
@@ -436,15 +477,6 @@ public class Claim {
         }
     }
 
-    @ApiStatus.Internal
-    public void internal_onDestroyed() {
-        if (!this.destroyed) {
-            this.destroyed = true;
-            ClaimEvents.CLAIM_DESTROYED.invoker().onEvent(this);
-            this.clearTickedPlayers();
-        }
-    }
-
     private void clearTickedPlayers() {
         if (!this.previousTickPlayers.isEmpty()) {
             for (var augment : this.augments.values()) {
@@ -546,6 +578,40 @@ public class Claim {
             // Reset players in claim
             this.previousTickPlayers.clear();
             this.previousTickPlayers.addAll(playersInClaim);
+        }
+    }
+
+    public Collection<PlayerGroup> getGroups() {
+        var g = this.trustedGroups;
+        if (g == null) {
+            g = new HashSet<>();
+            var iter = this.trustedGroupKeys.iterator();
+
+            while (iter.hasNext()) {
+                var key = iter.next();
+                var group = PlayerGroupProvider.getGroup(this.server, key);
+                if (group != null) {
+                    g.add(group);
+                    iter.remove();
+                }
+            }
+            this.trustedGroups = g;
+        }
+
+        return g;
+    }
+
+    public void destroy() {
+        for (var group : this.getGroups()) {
+            group.removeClaim(this);
+        }
+
+        GetOffMyLawn.CLAIM.get(world).remove(this);
+
+        if (!this.destroyed) {
+            this.destroyed = true;
+            ClaimEvents.CLAIM_DESTROYED.invoker().onEvent(this);
+            this.clearTickedPlayers();
         }
     }
 }

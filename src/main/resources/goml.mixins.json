@@ -14,6 +14,7 @@
     "PistonBlockMixin",
     "PlayerManagerMixin",
     "ServerPlayerEntityMixin",
+    "ServerScoreboardMixin",
     "ShapedRecipeMixin",
     "TntEntityMixin",
     "augment.EndermanEntityMixin",

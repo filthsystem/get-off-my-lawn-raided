@@ -66,12 +66,12 @@ public class GOMLBlocks {
 
     private static <T extends ClaimAugmentBlock> Pair<T, Item> register(String name, T augment, int tooltipLines, boolean withGroup) {
         var id = GetOffMyLawn.id(name);
-        BooleanSupplier check = () -> GetOffMyLawn.CONFIG.enabledAugments.getOrDefault(id, true);
         ClaimAugmentBlock registered = Registry.register(
                 Registries.BLOCK,
                 id,
                 augment
         );
+        BooleanSupplier check = () -> GetOffMyLawn.CONFIG.enabledAugments.getOrDefault(registered, true);
 
         augment.setEnabledCheck(check);
 

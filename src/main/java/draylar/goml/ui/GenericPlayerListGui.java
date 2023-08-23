@@ -25,12 +25,19 @@ public abstract class GenericPlayerListGui extends PagedGui {
 
     @Override
     protected int getPageAmount() {
-        return (this.uuids.size()) / PAGE_SIZE;
+        return (this.getEntryCount()) / PAGE_SIZE;
+    }
+
+    protected int getEntryCount() {
+        return this.uuids.size();
     }
 
     @Override
     protected DisplayElement getElement(int id) {
+        return getPlayerElement(id);
+    }
 
+    protected DisplayElement getPlayerElement(int id) {
         if (this.uuids.size() > id) {
             return getPlayerElement(this.uuids.get(id));
         }
@@ -55,10 +62,7 @@ public abstract class GenericPlayerListGui extends PagedGui {
         }
 
         this.modifyBuilder(builder, optional, uuid);
-
-        return DisplayElement.of(
-                builder
-        );
+        return DisplayElement.of(builder);
     }
 
     protected void modifyBuilder(GuiElementBuilder builder, Optional<GameProfile> optional, UUID uuid) {

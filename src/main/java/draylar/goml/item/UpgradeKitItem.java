@@ -84,7 +84,7 @@ public class UpgradeKitItem extends Item implements PolymerItem {
                         var oldSize = claimInfo.getClaimBox();
 
                         // remove claim
-                        GetOffMyLawn.CLAIM.get(world).remove(currentClaim.get().getValue());
+                        GetOffMyLawn.CLAIM.get(world).remove(claimInfo);
 
                         // set block
                         BlockEntity oldBE = world.getBlockEntity(pos);

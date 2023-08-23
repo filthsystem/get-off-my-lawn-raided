@@ -23,6 +23,7 @@ repositories {
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 	maven { url 'https://maven.blamejared.com' }
 	maven { url "https://maven.shedaniel.me" }
+	maven { url "https://api.modrinth.com/maven" }
 
 	maven {
 		name = "TerraformersMC"
@@ -36,10 +37,7 @@ repositories {
 		}
 	}
 
-	maven {
-		name = 'Ladysnake Mods'
-		url = 'https://ladysnake.jfrog.io/artifactory/mods'
-	}
+	maven { url 'https://maven.ladysnake.org/releases' }
 
 	maven {
 		url "https://www.cursemaven.com"
@@ -47,6 +45,8 @@ repositories {
 			includeGroup "curse.maven"
 		}
 	}
+
+	maven { url = "https://maven.resourcefulbees.com/repository/maven-public/" }
 
 	maven { url 'https://repo.mikeprimm.com/' }
 
@@ -74,6 +74,10 @@ dependencies {
 	//modCompileOnly 'com.github.Ladysnake:BLAST:1.19-SNAPSHOT'
 	modCompileOnly files("./modsWithCompat/appliedenergistics2-10.0.0-beta.2.jar")
 	modCompileOnly 'vazkii.botania:Botania:1.18.1-427-FABRIC'
+
+
+	modCompileOnly "maven.modrinth:argonauts:${project.argonauts_version}"
+	modCompileOnly "maven.modrinth:resourceful-lib:${project.reslib_version}"
 
 	// Server side stuff
 	modImplementation include("eu.pb4:polymer-core:${project.polymer_version}")
@@ -109,6 +113,10 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 jar {
 	from "LICENSE"
+
+	from("src/main/resources/data/goml/lang") {
+		into("assets/goml/lang")
+	}
 }
 
 // configure the maven publication

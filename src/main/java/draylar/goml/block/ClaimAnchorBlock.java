@@ -58,7 +58,7 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
         if (!world.isClient()) {
             var radius = Math.max(this.radius.getAsInt(), 1);
 
-            Claim claimInfo = new Claim(Collections.singleton(placer.getUuid()), Collections.emptySet(), pos);
+            Claim claimInfo = new Claim(world.getServer(), Collections.singleton(placer.getUuid()), Collections.emptySet(), pos);
             claimInfo.internal_setIcon(new ItemStack(itemStack.getItem()));
             claimInfo.internal_setType(this);
             claimInfo.internal_setWorld(world.getRegistryKey().getValue());
@@ -89,8 +89,7 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
         if (newState.getBlock() != state.getBlock()) {
             ClaimUtils.getClaimsAt(world, pos).forEach(claimedArea -> {
                 if (ClaimUtils.canDestroyClaimBlock(claimedArea, null, pos)) {
-                    GetOffMyLawn.CLAIM.get(world).remove(claimedArea.getValue());
-                    claimedArea.getValue().internal_onDestroyed();
+                    claimedArea.getValue().destroy();
                 }
             });
         }
@@ -107,9 +106,7 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
 
         ClaimUtils.getClaimsAt(world, pos).forEach(claimedArea -> {
             if (ClaimUtils.canDestroyClaimBlock(claimedArea, player, pos)) {
-                GetOffMyLawn.CLAIM.get(world).remove(claimedArea.getValue());
-                claimedArea.getValue().internal_onDestroyed();
-
+                claimedArea.getValue().destroy();
             }
         });
 

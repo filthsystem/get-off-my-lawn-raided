@@ -3,7 +3,7 @@
 *Get Off My Lawn ReServed* is a take on the popular concept of player claims for Survival/Freebuild Fabric servers. 
 This mod works fully server side (no client mod required!) while being compatible with major Fabric modpacks
 
-This project is a fork [Get Off My Lawn by Draylar](https://github.com/Draylar/get-off-my-lawn), with main focus on improving and building on top of original.
+This project is a fork [Get Off My Lawn by Draylar](https://github.com/Draylar/get-off-my-lawn), with focus on improving and building on top of the original.
 
 
 # Video Showcase
@@ -36,7 +36,7 @@ To configure your claim, you can interact with the anchor block. A UI will appea
 
 ## Claim upgrades:
 To upgrade your claim, place an Anchor Augment next to the core Claim Anchor. Anchor Augments available include:
-- Ender Binding: Prevents Enddermen from teleporting
+- Ender Binding: Prevents Endermen from teleporting
 - Villager Core: Prevents Zombies from damaging Villagers
 - Greeter: MOTD to visitors
 - Angelic Aura: Regen to all players inside region
@@ -46,7 +46,7 @@ To upgrade your claim, place an Anchor Augment next to the core Claim Anchor. An
 - Lake Spirit's Grace: water breathing, water sight, and better breathing
 - Chaos Zone: Strength to all players inside region
 - PvP Arena: Allows changing pvp state in claim
-- Exprosion Controller: Allows toggling explosion protection
+- Explosion Controller: Allows toggling explosion protection
 
 ## Config:
 You can find config file in `./config/getoffmylawn.json`. To reload it, just type `/goml admin reload` in chat/console.

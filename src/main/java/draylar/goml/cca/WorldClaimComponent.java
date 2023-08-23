@@ -50,7 +50,7 @@ public class WorldClaimComponent implements ClaimComponent {
                 NbtCompound childCompound = (NbtCompound) child;
                 ClaimBox box = boxFromTag((NbtCompound) childCompound.get("Box"));
                 if (box != null) {
-                    Claim claimInfo = Claim.fromNbt((NbtCompound) childCompound.get("Info"), version);
+                    Claim claimInfo = Claim.fromNbt(this.world.getServer(), (NbtCompound) childCompound.get("Info"), version);
                     claimInfo.internal_setWorld(world);
                     claimInfo.internal_setClaimBox(box);
                     if (this.world instanceof ServerWorld world1) {
@@ -61,7 +61,7 @@ public class WorldClaimComponent implements ClaimComponent {
             });
         } else {
             nbtList.forEach(child -> {
-                Claim claimInfo = Claim.fromNbt((NbtCompound) child, version);
+                Claim claimInfo = Claim.fromNbt(this.world.getServer(), (NbtCompound) child, version);
                 claimInfo.internal_setWorld(world);
                 if (this.world instanceof ServerWorld world1) {
                     claimInfo.internal_updateChunkCount(world1);

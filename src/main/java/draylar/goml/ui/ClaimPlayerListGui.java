@@ -2,11 +2,12 @@ package draylar.goml.ui;
 
 import com.mojang.authlib.GameProfile;
 import draylar.goml.api.Claim;
+import draylar.goml.api.group.PlayerGroup;
 import draylar.goml.registry.GOMLTextures;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.ApiStatus;
@@ -21,6 +22,7 @@ public class ClaimPlayerListGui extends GenericPlayerListGui {
 
     private final boolean canModifyOwners;
     private final boolean canModifyTrusted;
+    private final List<PlayerGroup> groups = new ArrayList<>();
 
     public ClaimPlayerListGui(ServerPlayerEntity player, Claim claim, boolean canModifyTrusted, boolean canModifyOwners, boolean isAdmin, @Nullable Runnable onClose) {
         super(player, onClose);
@@ -38,11 +40,42 @@ public class ClaimPlayerListGui extends GenericPlayerListGui {
     }
 
     @Override
+    protected DisplayElement getElement(int id) {
+        return id < this.groups.size() ? this.getGroupElement(id) : super.getElement(id - this.groups.size());
+    }
+
+    private DisplayElement getGroupElement(int id) {
+        var group = this.groups.get(id);
+
+        var builder = GuiElementBuilder.from(group.icon())
+
+                .setName(Text.empty().append(group.selfDisplayName()).append(Text.literal(" (").formatted(Formatting.DARK_GRAY)
+                        .append(Text.empty().append(group.provider().getName()).setStyle(Style.EMPTY.withColor(0x45abff))
+                        .append(Text.literal(")").formatted(Formatting.DARK_GRAY)))
+                        )
+                ).hideFlags();
+
+
+        if (this.canModifyTrusted) {
+            builder.addLoreLine(Text.translatable("text.goml.gui.click_to_remove"));
+            builder.setCallback((x, y, z) -> {
+                playClickSound(player);
+                this.claim.untrust(group);
+                this.updateDisplay();
+            });
+        }
+
+        return DisplayElement.of(builder);
+    }
+
+    @Override
     protected void updateDisplay() {
+        this.groups.clear();
+        this.groups.addAll(this.claim.getGroups());
+        this.groups.sort(Comparator.comparing(x -> x.getKey().toString()));
         this.uuids.clear();
         this.uuids.addAll(this.claim.getOwners());
         this.uuids.addAll(this.claim.getTrusted());
-        super.updateDisplay();
         super.updateDisplay();
     }
 
@@ -58,12 +91,14 @@ public class ClaimPlayerListGui extends GenericPlayerListGui {
                         this.ignoreCloseCallback = true;
                         this.close(true);
                         this.ignoreCloseCallback = false;
-                        new GenericPlayerSelectionGui(
+                        new GenericPlayerAndGroupSelectionGui(
                                 this.player,
                                 Text.translatable("text.goml.gui.player_add_gui.title"),
-                                (p) -> !this.claim.hasPermission(p.getId()),
+                                (p) -> !this.claim.hasDirectPermission(p.getId()),
+                                (p) -> !this.claim.getGroups().contains(p),
                                 (p) -> this.claim.trust(p.getId()),
-                                this::refreshOpen);
+                                this.claim::trust,
+                                this::refreshOpen).updateAndOpen();
                     }))
                     : DisplayElement.filler();
             default -> super.getNavElement(id);
@@ -78,7 +113,7 @@ public class ClaimPlayerListGui extends GenericPlayerListGui {
         var canRemove = isOwner ? this.canModifyOwners : this.canModifyTrusted;
 
         builder.setName(Text.literal(exist ? gameProfile.getName() : uuid.toString())
-                .formatted(isOwner ? Formatting.GOLD : Formatting.WHITE) .append(isOwner
+                .formatted(isOwner ? Formatting.GOLD : Formatting.WHITE).append(isOwner
                         ? Text.literal(" (").formatted(Formatting.DARK_GRAY)
                         .append(Text.translatable("text.goml.owner").formatted(Formatting.WHITE))
                         .append(Text.literal(")").formatted(Formatting.DARK_GRAY))
