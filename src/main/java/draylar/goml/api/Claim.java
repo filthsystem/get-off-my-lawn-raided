@@ -606,8 +606,10 @@ public class Claim {
             group.removeClaim(this);
         }
 
-        GetOffMyLawn.CLAIM.get(world).remove(this);
-
+        var world = getWorldInstance(this.server);
+        if (world != null) {
+            GetOffMyLawn.CLAIM.get(world).remove(this);
+        }
         if (!this.destroyed) {
             this.destroyed = true;
             ClaimEvents.CLAIM_DESTROYED.invoker().onEvent(this);
