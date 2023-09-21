@@ -15,11 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ShapedRecipe.class)
 public class ShapedRecipeMixin {
-    @Shadow @Final private ItemStack output;
+    @Shadow @Final private ItemStack result;
 
     @Inject(method = "matches(Lnet/minecraft/inventory/RecipeInputInventory;Lnet/minecraft/world/World;)Z", at = @At("HEAD"), cancellable = true)
     private void goml_cancelIfDisabled(RecipeInputInventory recipeInputInventory, World world, CallbackInfoReturnable<Boolean> cir) {
-        if (this.output.getItem() instanceof ToggleableBlockItem item && !item.isEnabled()) {
+        if (this.result.getItem() instanceof ToggleableBlockItem item && !item.isEnabled()) {
             cir.setReturnValue(false);
         }
     }
