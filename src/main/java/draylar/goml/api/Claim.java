@@ -616,4 +616,13 @@ public class Claim {
             this.clearTickedPlayers();
         }
     }
+
+    public boolean hasPermission(Collection<UUID> trusted) {
+        for (var x : trusted) {
+            if (hasPermission(x)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

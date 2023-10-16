@@ -9,6 +9,7 @@ import draylar.goml.api.event.ClaimEvents;
 import draylar.goml.block.augment.ExplosionControllerAugmentBlock;
 import draylar.goml.block.entity.ClaimAnchorBlockEntity;
 import draylar.goml.other.GomlPlayer;
+import draylar.goml.other.OriginOwner;
 import draylar.goml.other.StatusEnum;
 import draylar.goml.registry.GOMLBlocks;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -33,10 +34,7 @@ import net.minecraft.world.WorldView;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ClaimUtils {
 
@@ -217,7 +215,7 @@ public class ClaimUtils {
 
         PlayerEntity player;
 
-        if (source.getAttacker() instanceof PlayerEntity playerEntity) {
+         if (source.getAttacker() instanceof PlayerEntity playerEntity) {
             player = playerEntity;
         } else if (!GetOffMyLawn.CONFIG.protectAgainstHostileExplosionsActivatedByTrustedPlayers && source.getAttacker() instanceof MobEntity creeperEntity && creeperEntity.getTarget() instanceof PlayerEntity playerEntity) {
             player = playerEntity;
@@ -227,6 +225,9 @@ public class ClaimUtils {
             player = playerEntity;
         } else if (source.getAttacker() instanceof TameableEntity projectileEntity && projectileEntity.getOwner() instanceof PlayerEntity playerEntity) {
             player = playerEntity;
+        } else if (!(entity instanceof PlayerEntity) && source.getSource() != null && (source.getAttacker() == null || source.getSource() == source.getAttacker())) {
+            var projectile = source.getSource();
+            return hasMatchingClaims(world, entity.getBlockPos(), ((OriginOwner) projectile).goml$getOrigin());
         } else {
             return true;
         }
@@ -434,5 +435,34 @@ public class ClaimUtils {
 
 
         return new Pair<>(center.add(x, 0, z), dir);
+    }
+
+    public static boolean hasMatchingClaims(World world, BlockPos target, BlockPos origin) {
+        return hasMatchingClaims(world, target, origin, null);
+    }
+    public static boolean hasMatchingClaims(World world, BlockPos target, BlockPos origin, @Nullable UUID uuid) {
+        var claims = ClaimUtils.getClaimsAt(world, target);
+
+        if (claims.isEmpty()) {
+            return true;
+        }
+        var originClaims = ClaimUtils.getClaimsAt(world, origin);
+
+        if (originClaims.isEmpty() && uuid == null) {
+            return false;
+        }
+
+        var trusted = new HashSet<UUID>();
+        if (uuid != null) {
+            trusted.add(uuid);
+        }
+
+        claims.forEach(x -> {
+            trusted.addAll(x.getValue().getOwners());
+            trusted.addAll(x.getValue().getTrusted());
+        });
+
+        return claims.anyMatch(x -> x.getValue().hasPermission(trusted));
+
     }
 }
