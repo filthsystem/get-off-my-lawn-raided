@@ -44,7 +44,7 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
     }
 
     public ClaimAnchorBlock(Block.Settings settings, IntSupplier radius, String texture) {
-        super(settings);
+        super(settings.solid());
         this.radius = radius;
         this.texture = texture;
     }

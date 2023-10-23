@@ -18,8 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public class EntityMixin implements OriginOwner {
+public abstract class EntityMixin implements OriginOwner {
     @Shadow private World world;
+
+    @Shadow public abstract BlockPos getBlockPos();
+
     @Unique
     private BlockPos originPos;
 
@@ -52,5 +55,10 @@ public class EntityMixin implements OriginOwner {
     @Override
     public void goml$setOrigin(BlockPos pos) {
         this.originPos = pos;
+    }
+
+    @Override
+    public void goml$tryFilling() {
+        this.originPos = this.getBlockPos();
     }
 }

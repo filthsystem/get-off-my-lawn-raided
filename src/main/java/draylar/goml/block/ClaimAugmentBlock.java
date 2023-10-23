@@ -42,11 +42,11 @@ public class ClaimAugmentBlock extends Block implements Augment, BlockEntityProv
 
     @Deprecated
     public ClaimAugmentBlock(Settings settings) {
-        this(settings, GOMLTextures.MISSING_TEXTURE);
+        this(settings.solid(), GOMLTextures.MISSING_TEXTURE);
     }
 
     public ClaimAugmentBlock(Settings settings, String texture) {
-        super(settings);
+        super(settings.solid());
         this.texture = texture;
     }
 
