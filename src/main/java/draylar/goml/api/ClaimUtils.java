@@ -227,7 +227,7 @@ public class ClaimUtils {
             player = playerEntity;
         } else if (!(entity instanceof PlayerEntity) && source.getSource() != null && (source.getAttacker() == null || source.getSource() == source.getAttacker())) {
             var projectile = source.getSource();
-            return hasMatchingClaims(world, entity.getBlockPos(), ((OriginOwner) projectile).goml$getOrigin());
+            return hasMatchingClaims(world, entity.getBlockPos(), ((OriginOwner) projectile).goml$getOriginSafe());
         } else {
             return true;
         }

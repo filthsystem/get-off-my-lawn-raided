@@ -3,10 +3,12 @@ package draylar.goml.mixin;
 import com.jamieswhiteshirt.rtree3i.Entry;
 import com.jamieswhiteshirt.rtree3i.Selection;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import draylar.goml.api.Claim;
 import draylar.goml.api.ClaimBox;
 import draylar.goml.api.ClaimUtils;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.util.math.BlockPos;
@@ -31,6 +33,7 @@ public class PistonHandlerMixin {
     @Shadow @Final private List<BlockPos> movedBlocks;
     @Shadow @Final private List<BlockPos> brokenBlocks;
     @Shadow @Final private World world;
+    @Shadow @Final private Direction motionDirection;
     @Unique
     private boolean claimsEmpty;
     private HashSet<UUID> trusted;
@@ -46,7 +49,7 @@ public class PistonHandlerMixin {
         });
     }
 
-    @ModifyReturnValue(method = "tryMove", at = @At("RETURN"))
+    @ModifyReturnValue(method = "calculatePush", at = @At("RETURN"))
     private boolean preventMovement(boolean value) {
         if (value) {
             if (!checkClaims(this.movedBlocks) || !checkClaims(this.brokenBlocks)) {
@@ -63,6 +66,19 @@ public class PistonHandlerMixin {
     private boolean checkClaims(List<BlockPos> blocks) {
         for (var pos : blocks) {
             var claims = ClaimUtils.getClaimsAt(this.world, pos);
+
+            boolean firstFound = true;
+
+            if (claims.isEmpty() && this.claimsEmpty) {
+                firstFound = false;
+            }
+
+            if (firstFound && claims.noneMatch(x -> x.getValue().hasPermission(this.trusted))) {
+                return false;
+            }
+
+            var mut = new BlockPos.Mutable();
+            claims = ClaimUtils.getClaimsAt(this.world, mut.set(pos).move(this.motionDirection));
             if (claims.isEmpty() && this.claimsEmpty) {
                 continue;
             }
