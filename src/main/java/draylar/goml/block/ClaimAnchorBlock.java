@@ -99,9 +99,9 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (world == null || world.isClient()) {
-            return;
+            return state;
         }
 
         ClaimUtils.getClaimsAt(world, pos).forEach(claimedArea -> {
@@ -110,7 +110,7 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
             }
         });
 
-        super.onBreak(world, pos, state, player);
+        return super.onBreak(world, pos, state, player);
     }
 
     @Override

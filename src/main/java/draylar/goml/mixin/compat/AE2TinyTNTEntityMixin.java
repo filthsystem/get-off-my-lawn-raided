@@ -11,24 +11,25 @@ import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import javax.annotation.Nullable;
 
 @Pseudo
 @Mixin(TinyTNTPrimedEntity.class)
 public abstract class AE2TinyTNTEntityMixin extends TntEntity {
-    @Shadow @Nullable public abstract LivingEntity getOwner();
+    @Shadow @Nullable
+    public abstract LivingEntity getOwner();
 
     public AE2TinyTNTEntityMixin(EntityType<? extends TntEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    @Redirect(method = "method_6971", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    /*@Redirect(method = "method_6971", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private boolean goml_damageEntities(Entity instance, DamageSource source, float amount) {
         if (ClaimUtils.canExplosionDestroy(this.getWorld(), instance.getBlockPos(), this.getOwner())) {
             return instance.damage(source, amount);
@@ -44,5 +45,5 @@ public abstract class AE2TinyTNTEntityMixin extends TntEntity {
         }
 
         return instance.getBlockState(pos);
-    }
+    }*/
 }

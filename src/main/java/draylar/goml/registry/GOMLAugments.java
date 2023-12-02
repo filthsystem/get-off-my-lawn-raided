@@ -3,6 +3,7 @@ package draylar.goml.registry;
 import com.google.common.collect.HashBiMap;
 import draylar.goml.api.Augment;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 public class GOMLAugments {
     private static final Map<Identifier, Augment> AUGMENTS = new HashMap<>();
-    private static final Map<Augment, Identifier> AUGMENT_IDS = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
+    private static final Map<Augment, Identifier> AUGMENT_IDS = new Reference2ObjectOpenHashMap<>();
 
 
     @Nullable

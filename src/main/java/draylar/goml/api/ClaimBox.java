@@ -20,7 +20,7 @@ public record ClaimBox(com.jamieswhiteshirt.rtree3i.Box rtree3iBox, Box minecraf
     public ClaimBox(BlockPos origin, int radius, int radiusY, boolean noShift) {
         this(
                 noShift ? createBoxNoShift(origin, radius, radiusY) : createBox(origin, radius, radiusY),
-                new Box(origin.add(-radius, -radiusY, -radius), noShift ? origin.add(radius, radiusY, radius) : origin.add(radius + 1, radiusY + 1, radius + 1)),
+                Box.enclosing(origin.add(-radius, -radiusY, -radius), noShift ? origin.add(radius, radiusY, radius) : origin.add(radius + 1, radiusY + 1, radius + 1)),
                 origin, radius, radiusY, noShift
         );
     }

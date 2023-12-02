@@ -37,8 +37,8 @@ public class VanillaTeamGroups {
         @Override
         public @Nullable PlayerGroup getGroupOf(PlayerEntity player) {
             var team = player.getScoreboardTeam();
-            if (team instanceof Team team1) {
-                return TeamGroup.of(player.getServer().getUserCache(), team1);
+            if (team != null) {
+                return TeamGroup.of(player.getServer().getUserCache(), team);
             }
             return null;
         }
@@ -48,7 +48,7 @@ public class VanillaTeamGroups {
             var profile = server.getUserCache().getByUuid(uuid);
 
             if (profile.isPresent()) {
-                var team = server.getScoreboard().getPlayerTeam(profile.get().getName());
+                var team = server.getScoreboard().getTeam(profile.get().getName());
                 if (team  != null) {
                     return TeamGroup.of(server.getUserCache(), team);
                 }
