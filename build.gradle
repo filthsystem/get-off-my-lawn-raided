@@ -78,6 +78,7 @@ dependencies {
 
 	modCompileOnly "maven.modrinth:argonauts:${project.argonauts_version}"
 	modCompileOnly "maven.modrinth:resourceful-lib:${project.reslib_version}"
+	modCompileOnly "curse.maven:dynmapforge-59433:4958242"
 
 	// Server side stuff
 	modImplementation include("eu.pb4:polymer-core:${project.polymer_version}")
@@ -86,6 +87,8 @@ dependencies {
 	modImplementation include("xyz.nucleoid:server-translations-api:${project.stapi_version}")
 	modImplementation include("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
 	modImplementation include("eu.pb4:common-protection-api:1.0.0")
+
+	compileOnly "us.dynmap:DynmapCoreAPI:${dynmap_version}"
 }
 
 processResources {
