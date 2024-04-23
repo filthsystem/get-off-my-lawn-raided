@@ -12,6 +12,7 @@ import eu.pb4.polymer.core.api.utils.PolymerObject;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -69,7 +70,7 @@ public class ClaimAugmentBlockEntity extends BlockEntity implements PolymerObjec
     }
 
     @Override
-    protected void writeNbt(NbtCompound tag) {
+    protected void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         if (this.claimPosition != null) {
             tag.putLong(CLAIM_POSITION_KEY, this.claimPosition.asLong());
         }
@@ -77,11 +78,11 @@ public class ClaimAugmentBlockEntity extends BlockEntity implements PolymerObjec
             tag.putLong(PARENT_POSITION_KEY, this.parentPosition.asLong());
         }
 
-        super.writeNbt(tag);
+        super.writeNbt(tag, registryLookup);
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
+    public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         if (tag.contains(CLAIM_POSITION_KEY)) {
             this.claimPosition = BlockPos.fromLong(tag.getLong(CLAIM_POSITION_KEY));
         }
@@ -94,7 +95,7 @@ public class ClaimAugmentBlockEntity extends BlockEntity implements PolymerObjec
             }
         }
 
-        super.readNbt(tag);
+        super.readNbt(tag, registryLookup);
     }
 
     public void remove() {

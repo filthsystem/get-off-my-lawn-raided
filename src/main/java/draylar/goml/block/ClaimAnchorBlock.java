@@ -114,8 +114,8 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity playerEntity, Hand hand, BlockHitResult hit) {
-        if (playerEntity instanceof ServerPlayerEntity player && !player.isSneaking() && hand == Hand.MAIN_HAND && !(player.getStackInHand(hand).getItem() instanceof UpgradeKitItem)) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity playerEntity, BlockHitResult hit) {
+        if (playerEntity instanceof ServerPlayerEntity player && !player.isSneaking() && !(player.getMainHandStack().getItem() instanceof UpgradeKitItem)) {
             var blockEntity = world.getBlockEntity(pos, GOMLEntities.CLAIM_ANCHOR);
             if (blockEntity.isPresent()) {
                 blockEntity.get().getClaim().openUi(player);
@@ -123,7 +123,7 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
 
             return ActionResult.SUCCESS;
         }
-        return super.onUse(state, world, pos, playerEntity, hand, hit);
+        return super.onUse(state, world, pos, playerEntity, hit);
     }
 
     public int getRadius() {
@@ -149,10 +149,6 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return ClaimAnchorBlockEntity::tick;
-    }
-    @Override
-    public Block getPolymerBlock(BlockState state) {
-        return Blocks.PLAYER_HEAD;
     }
 
     @Override

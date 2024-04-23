@@ -70,7 +70,7 @@ public class ClaimAugmentBlock extends Block implements Augment, BlockEntityProv
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity playerEntity, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity playerEntity, BlockHitResult hit) {
         if (playerEntity instanceof ServerPlayerEntity player && this.hasSettings()) {
             var blockEntity = world.getBlockEntity(pos, GOMLEntities.CLAIM_AUGMENT);
 
@@ -85,7 +85,7 @@ public class ClaimAugmentBlock extends Block implements Augment, BlockEntityProv
             }
         }
 
-        return super.onUse(state, world, pos, playerEntity, hand, hit);
+        return super.onUse(state, world, pos, playerEntity, hit);
     }
 
     @Override
@@ -201,11 +201,6 @@ public class ClaimAugmentBlock extends Block implements Augment, BlockEntityProv
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return ClaimAugmentBlockEntity::tick;
-    }
-
-    @Override
-    public Block getPolymerBlock(BlockState state) {
-        return Blocks.PLAYER_HEAD;
     }
 
     @Override

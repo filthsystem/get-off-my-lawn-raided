@@ -5,7 +5,7 @@ import draylar.goml.api.ClaimUtils;
 import draylar.goml.api.WorldParticleUtils;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -62,7 +62,7 @@ public class GogglesItem extends ArmorItem implements PolymerItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipContext context, @Nullable ServerPlayerEntity player) {
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipType context, @Nullable ServerPlayerEntity player) {
         var clientStack = PolymerItem.super.getPolymerItemStack(itemStack, context, player);
         clientStack.addEnchantment(Enchantments.LURE, 64);
         return clientStack;

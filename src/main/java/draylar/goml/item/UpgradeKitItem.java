@@ -13,7 +13,7 @@ import draylar.goml.block.entity.ClaimAnchorBlockEntity;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -138,8 +138,9 @@ public class UpgradeKitItem extends Item implements PolymerItem {
         return ActionResult.PASS;
     }
 
+
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         if(tooltip == null) {
             return;
         }
@@ -153,7 +154,7 @@ public class UpgradeKitItem extends Item implements PolymerItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipContext context, @Nullable ServerPlayerEntity player) {
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipType context, @Nullable ServerPlayerEntity player) {
         var clientStack = PolymerItem.super.getPolymerItemStack(itemStack, context, player);
         clientStack.addEnchantment(Enchantments.LURE, 68);
         return clientStack;

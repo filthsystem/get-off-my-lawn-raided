@@ -52,7 +52,7 @@ public class GenericPlayerAndGroupSelectionGui extends GenericPlayerSelectionGui
                                         .append(Text.literal(")").formatted(Formatting.DARK_GRAY)))
                         )
                 )
-                .hideFlags()
+                .hideDefaultTooltip().noDefaults()
                 .setCallback((x, y, z) -> {
                     playClickSound(this.player);
                     this.onClickGroup.accept(group);

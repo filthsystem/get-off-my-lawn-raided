@@ -53,7 +53,7 @@ public class ClaimPlayerListGui extends GenericPlayerListGui {
                         .append(Text.empty().append(group.provider().getName()).setStyle(Style.EMPTY.withColor(0x45abff))
                         .append(Text.literal(")").formatted(Formatting.DARK_GRAY)))
                         )
-                ).hideFlags();
+                ).hideDefaultTooltip().noDefaults();
 
 
         if (this.canModifyTrusted) {

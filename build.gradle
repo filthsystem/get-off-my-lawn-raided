@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.4.+'
+	id 'fabric-loom' version '1.6.+'
 	id 'maven-publish'
 	id "com.modrinth.minotaur" version "2.+"
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
@@ -62,9 +62,9 @@ dependencies {
 
 	modImplementation include("com.jamieswhiteshirt:rtree-3i-lite-fabric:${project.rtree_version}")
 	// CCA for data
-	modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}")
+	modImplementation include("org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}")
 
-	modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${project.cca_version}")
+	modImplementation include("org.ladysnake.cardinal-components-api:cardinal-components-world:${project.cca_version}")
 
 	// Flight
 	modImplementation include("io.github.ladysnake:PlayerAbilityLib:${pal_version}")

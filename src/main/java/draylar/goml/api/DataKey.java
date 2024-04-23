@@ -1,5 +1,6 @@
 package draylar.goml.api;
 
+import draylar.goml.other.LegacyNbtHelper;
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -63,11 +64,11 @@ public record DataKey<T>(Identifier key, T defaultValue, Function<T, NbtElement>
     }
 
     public static DataKey<UUID> ofUuid(Identifier key) {
-        return new DataKey<>(key, Util.NIL_UUID, (i) -> NbtHelper.fromUuid(i), (nbt) -> NbtHelper.toUuid(nbt));
+        return new DataKey<>(key, Util.NIL_UUID, (i) -> LegacyNbtHelper.fromUuid(i), (nbt) -> LegacyNbtHelper.toUuid(nbt));
     }
 
     public static DataKey<Set<UUID>> ofUuidSet(Identifier key) {
-        return ofCollection(key, HashSet::new, (i) -> NbtHelper.fromUuid(i), (nbt) -> NbtHelper.toUuid(nbt));
+        return ofCollection(key, HashSet::new, (i) -> LegacyNbtHelper.fromUuid(i), (nbt) -> LegacyNbtHelper.toUuid(nbt));
     }
 
     public static DataKey<Double> ofDouble(Identifier key, double defaultValue) {
@@ -75,7 +76,7 @@ public record DataKey<T>(Identifier key, T defaultValue, Function<T, NbtElement>
     }
 
     public static DataKey<BlockPos> ofPos(Identifier key) {
-        return new DataKey<>(key, null, (i) -> NbtHelper.fromBlockPos(i), (nbt) -> nbt instanceof NbtCompound compound ? NbtHelper.toBlockPos(compound) : null);
+        return new DataKey<>(key, null, (i) -> LegacyNbtHelper.fromBlockPos(i), (nbt) -> nbt instanceof NbtCompound compound ? LegacyNbtHelper.toBlockPos(compound) : null);
     }
 
     @Nullable

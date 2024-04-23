@@ -3,7 +3,7 @@ package draylar.goml.item;
 import eu.pb4.polymer.core.api.block.PolymerHeadBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -33,9 +33,9 @@ public class ToggleableBlockItem extends TooltippedBlockItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         if (isEnabled.getAsBoolean()) {
-            super.appendTooltip(stack, world, tooltip, context);
+            super.appendTooltip(stack, context, tooltip, type);
         } else {
             tooltip.add(Text.translatable(String.format("text.goml.disabled_augment")).formatted(Formatting.RED, Formatting.BOLD));
         }

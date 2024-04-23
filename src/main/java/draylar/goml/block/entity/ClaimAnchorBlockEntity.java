@@ -14,6 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtLong;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -83,7 +84,8 @@ public class ClaimAnchorBlockEntity extends BlockEntity implements PolymerObject
     }
 
     @Override
-    protected void writeNbt(NbtCompound tag) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
         NbtList positions = new NbtList();
         for (BlockPos loadPosition : this.loadPositions) {
             positions.add(NbtLong.of(loadPosition.asLong()));
@@ -94,19 +96,18 @@ public class ClaimAnchorBlockEntity extends BlockEntity implements PolymerObject
             }
         }
 
-        tag.put(AUGMENT_LIST_KEY, positions);
-        super.writeNbt(tag);
+        nbt.put(AUGMENT_LIST_KEY, positions);
     }
 
     @Override
-    public void readNbt(NbtCompound tag) {
+    public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         NbtList positions = tag.getList(AUGMENT_LIST_KEY, NbtType.LONG);
         positions.forEach(sub -> {
             BlockPos foundPos = BlockPos.fromLong(((NbtLong) sub).longValue());
             this.loadPositions.add(foundPos);
         });
 
-        super.readNbt(tag);
+        super.readNbt(tag, registryLookup);
     }
 
     public void addChild(BlockPos pos, Augment augment) {

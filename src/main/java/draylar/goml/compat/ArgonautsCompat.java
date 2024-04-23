@@ -7,8 +7,10 @@ import earth.terrarium.argonauts.api.guild.Guild;
 import earth.terrarium.argonauts.api.guild.GuildApi;
 import earth.terrarium.argonauts.common.handlers.guild.members.GuildMember;
 import earth.terrarium.argonauts.fabric.events.GuildEvents;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeableItem;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
@@ -95,7 +97,7 @@ public class ArgonautsCompat {
         public ItemStack icon() {
             var stack = new ItemStack(Items.LEATHER_CHESTPLATE);
             var i = this.guild.color().getColorValue();
-            ((DyeableItem) stack.getItem()).setColor(stack,i != null ? i : 0xFFFFFF);
+            stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(i != null ? i : 0xFFFFFF, false));
             return stack;
         }
 

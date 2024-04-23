@@ -3,15 +3,15 @@ package draylar.goml.other;
 import draylar.goml.api.Claim;
 import draylar.goml.api.group.PlayerGroup;
 import draylar.goml.api.group.PlayerGroupProvider;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.UserCache;
 import org.jetbrains.annotations.Nullable;
 
@@ -108,7 +108,7 @@ public class VanillaTeamGroups {
         public ItemStack icon() {
             var stack = new ItemStack(Items.LEATHER_HELMET);
             var i = this.team.getColor().getColorValue();
-            ((DyeableItem) stack.getItem()).setColor(stack, i != null ? i : 0xFFFFFF);
+            stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(i != null ? i : 0xFFFFFF, true));
             return stack;
         }
 

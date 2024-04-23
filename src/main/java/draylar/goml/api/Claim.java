@@ -6,6 +6,7 @@ import draylar.goml.api.group.PlayerGroup;
 import draylar.goml.api.group.PlayerGroupProvider;
 import draylar.goml.block.ClaimAnchorBlock;
 import draylar.goml.block.entity.ClaimAnchorBlockEntity;
+import draylar.goml.other.LegacyNbtHelper;
 import draylar.goml.registry.GOMLAugments;
 import draylar.goml.registry.GOMLBlocks;
 import draylar.goml.registry.GOMLTextures;
@@ -182,13 +183,13 @@ public class Claim {
         // collect owner UUIDs into list
         NbtList ownersTag = new NbtList();
         for (UUID ownerUUID : owners) {
-            ownersTag.add(NbtHelper.fromUuid(ownerUUID));
+            ownersTag.add(LegacyNbtHelper.fromUuid(ownerUUID));
         }
 
         // collect trusted UUIDs into list
         NbtList trustedTag = new NbtList();
         for (UUID trustedUUID : trusted) {
-            trustedTag.add(NbtHelper.fromUuid(trustedUUID));
+            trustedTag.add(LegacyNbtHelper.fromUuid(trustedUUID));
         }
 
         // collect trusted UUIDs into list
@@ -211,7 +212,7 @@ public class Claim {
         nbt.put(TRUSTED_GROUP_KEY, trustedGroupsTag);
         nbt.putLong(POSITION_KEY, origin.asLong());
         if (this.icon != null) {
-            nbt.put(ICON_KEY, this.icon.writeNbt(new NbtCompound()));
+            nbt.put(ICON_KEY, ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, this.icon).result().get());
         }
         nbt.putString(TYPE_KEY, Registries.BLOCK.getId(this.type).toString());
 
@@ -232,7 +233,7 @@ public class Claim {
 
         for (var entry : this.augments.entrySet()) {
             var value = new NbtCompound();
-            value.put("Pos", NbtHelper.fromBlockPos(entry.getKey()));
+            value.put("Pos", LegacyNbtHelper.fromBlockPos(entry.getKey()));
             value.putString("Type", GOMLAugments.getId(entry.getValue()).toString());
 
             augments.add(value);
@@ -252,13 +253,13 @@ public class Claim {
         // Collect UUID of owners
         Set<UUID> ownerUUIDs = new HashSet<>();
         for (NbtElement ownerUUID : nbt.getList(OWNERS_KEY, NbtElement.INT_ARRAY_TYPE)) {
-            ownerUUIDs.add(NbtHelper.toUuid(ownerUUID));
+            ownerUUIDs.add(LegacyNbtHelper.toUuid(ownerUUID));
         }
 
         // Collect UUID of trusted
         Set<UUID> trustedUUIDs = new HashSet<>();
         for (NbtElement trustedUUID : nbt.getList(TRUSTED_KEY, NbtElement.INT_ARRAY_TYPE)) {
-            trustedUUIDs.add(NbtHelper.toUuid(trustedUUID));
+            trustedUUIDs.add(LegacyNbtHelper.toUuid(trustedUUID));
         }
 
         var claim = new Claim(server, ownerUUIDs, trustedUUIDs, BlockPos.fromLong(nbt.getLong(POSITION_KEY)));
@@ -274,10 +275,10 @@ public class Claim {
         }
 
         if (nbt.contains(ICON_KEY, NbtElement.COMPOUND_TYPE)) {
-            claim.icon = ItemStack.fromNbt(nbt.getCompound(ICON_KEY));
-        } else if (nbt.contains(ICON_KEY, NbtElement.COMPOUND_TYPE)) {
-            claim.icon = ItemStack.fromNbt(nbt.getCompound(ICON_KEY));
-        } else if (nbt.contains(TYPE_KEY, NbtElement.STRING_TYPE)) {
+            claim.icon = ItemStack.fromNbt(server.getRegistryManager(), nbt.getCompound(ICON_KEY)).orElse(ItemStack.EMPTY);
+        }
+
+        if (nbt.contains(TYPE_KEY, NbtElement.STRING_TYPE)) {
             var block = Registries.BLOCK.get(Identifier.tryParse(nbt.getString(TYPE_KEY)));
             if (block instanceof ClaimAnchorBlock anchorBlock) {
                 claim.type = anchorBlock;
@@ -303,7 +304,7 @@ public class Claim {
 
         for (var entry : nbt.getList(AUGMENTS_KEY, NbtElement.COMPOUND_TYPE)) {
             var value = (NbtCompound) entry;
-            var pos = NbtHelper.toBlockPos(value.getCompound("Pos"));
+            var pos = LegacyNbtHelper.toBlockPos(value.getCompound("Pos"));
             var type = GOMLAugments.get(Identifier.tryParse(value.getString("Type")));
 
             if (pos != null && type != null) {
