@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "goml:pvp_arena",
+    "id": "goml:pvp_arena",
     "count": 1
   }
 }

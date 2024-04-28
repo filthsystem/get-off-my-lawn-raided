@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "goml:glistening_claim_anchor",
+    "id": "goml:glistening_claim_anchor",
     "count": 1
   }
 }

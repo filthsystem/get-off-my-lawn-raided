@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "goml:reinforced_claim_anchor",
+    "id": "goml:reinforced_claim_anchor",
     "count": 1
   }
 }

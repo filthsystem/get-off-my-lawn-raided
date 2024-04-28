@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "goml:emeradic_claim_anchor",
+    "id": "goml:emeradic_claim_anchor",
     "count": 1
   }
 }

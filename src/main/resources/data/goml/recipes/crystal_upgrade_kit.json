@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "goml:crystal_upgrade_kit",
+    "id": "goml:crystal_upgrade_kit",
     "count": 1
   }
 }

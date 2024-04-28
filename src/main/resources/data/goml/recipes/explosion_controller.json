@@ -17,7 +17,7 @@
     }
   },
   "result": {
-    "item": "goml:explosion_controller",
+    "id": "goml:explosion_controller",
     "count": 1
   }
 }

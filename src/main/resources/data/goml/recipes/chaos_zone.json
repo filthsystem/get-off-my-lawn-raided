@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "goml:chaos_zone",
+    "id": "goml:chaos_zone",
     "count": 1
   }
 }

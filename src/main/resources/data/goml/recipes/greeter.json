@@ -17,7 +17,7 @@
     }
   },
   "result": {
-    "item": "goml:greeter",
+    "id": "goml:greeter",
     "count": 1
   }
 }

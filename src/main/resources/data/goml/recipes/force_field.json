@@ -17,7 +17,7 @@
     }
   },
   "result": {
-    "item": "goml:force_field",
+    "id": "goml:force_field",
     "count": 1
   }
 }

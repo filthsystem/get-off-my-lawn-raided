@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "goml:withered_upgrade_kit",
+    "id": "goml:withered_upgrade_kit",
     "count": 1
   }
 }

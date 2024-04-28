@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "goml:village_core",
+    "id": "goml:village_core",
     "count": 1
   }
 }

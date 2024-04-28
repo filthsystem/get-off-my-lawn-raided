@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "goml:emeradic_upgrade_kit",
+    "id": "goml:emeradic_upgrade_kit",
     "count": 1
   }
 }

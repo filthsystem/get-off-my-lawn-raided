@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "goml:glistening_upgrade_kit",
+    "id": "goml:glistening_upgrade_kit",
     "count": 1
   }
 }

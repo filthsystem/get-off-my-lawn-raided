@@ -20,7 +20,7 @@
     }
   },
   "result": {
-    "item": "goml:withered_claim_anchor",
+    "id": "goml:withered_claim_anchor",
     "count": 1
   }
 }

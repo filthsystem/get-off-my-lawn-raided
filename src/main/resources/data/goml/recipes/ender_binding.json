@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "goml:ender_binding",
+    "id": "goml:ender_binding",
     "count": 1
   }
 }
