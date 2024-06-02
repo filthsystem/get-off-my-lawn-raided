@@ -76,6 +76,7 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
             }
 
             ClaimEvents.CLAIM_CREATED.invoker().onEvent(claimInfo);
+            claimInfo.internal_enableUpdates();
         }
 
         super.onPlaced(world, pos, state, placer, itemStack);
@@ -117,9 +118,7 @@ public class ClaimAnchorBlock extends Block implements BlockEntityProvider, Poly
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity playerEntity, BlockHitResult hit) {
         if (playerEntity instanceof ServerPlayerEntity player && !player.isSneaking() && !(player.getMainHandStack().getItem() instanceof UpgradeKitItem)) {
             var blockEntity = world.getBlockEntity(pos, GOMLEntities.CLAIM_ANCHOR);
-            if (blockEntity.isPresent()) {
-                blockEntity.get().getClaim().openUi(player);
-            }
+            blockEntity.ifPresent(claimAnchorBlockEntity -> claimAnchorBlockEntity.getClaim().openUi(player));
 
             return ActionResult.SUCCESS;
         }

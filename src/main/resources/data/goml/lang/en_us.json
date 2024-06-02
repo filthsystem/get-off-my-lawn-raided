@@ -160,5 +160,10 @@
   "text.goml.vanilla_team.name": "Minecraft Team",
 
   "text.goml.argonauts.guild_type.display": "Guild: %s",
-  "text.goml.argonauts.guild_type.name": "Argonaut Guild"
+  "text.goml.argonauts.guild_type.name": "Argonaut Guild",
+
+  "text.goml.dynmap.label.claim_type": "Claim type",
+  "text.goml.dynmap.label.owners": "Owners",
+  "text.goml.dynmap.label.trusted": "Trusted",
+  "text.goml.dynmap.label.augments": "Augments"
 }

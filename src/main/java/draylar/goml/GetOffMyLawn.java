@@ -4,10 +4,12 @@ import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
 import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
+import draylar.goml.api.Claim;
 import draylar.goml.api.GomlProtectionProvider;
 import draylar.goml.cca.ClaimComponent;
 import draylar.goml.cca.WorldClaimComponent;
 import draylar.goml.compat.ArgonautsCompat;
+import draylar.goml.compat.DynmapCompat;
 import draylar.goml.other.CardboardWarning;
 import draylar.goml.other.ClaimCommand;
 import draylar.goml.config.GOMLConfig;
@@ -25,11 +27,15 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.function.Consumer;
 
 public class GetOffMyLawn implements ModInitializer, WorldComponentInitializer {
 
@@ -69,44 +75,35 @@ public class GetOffMyLawn implements ModInitializer, WorldComponentInitializer {
             GetOffMyLawn.CONFIG = GOMLConfig.loadOrCreateConfig();
         });
 
-        ServerTickEvents.END_WORLD_TICK.register((world) -> {
-            CLAIM.get(world).getClaims().values().forEach(x -> {
-                x.tick(world);
-            });
-        });
+        ServerTickEvents.END_WORLD_TICK.register((world) -> CLAIM.get(world).getClaims().values().forEach(x -> x.tick(world)));
 
         VanillaTeamGroups.init();
         if (FabricLoader.getInstance().isModLoaded("argonauts")) {
             ArgonautsCompat.init();
         }
 
-        ServerChunkEvents.CHUNK_LOAD.register((world, chunk) -> {
-            CLAIM.get(world).getClaims().entries().filter(x -> {
-                var minX = ChunkSectionPos.getSectionCoord(x.getKey().toBox().x1());
-                var minZ = ChunkSectionPos.getSectionCoord(x.getKey().toBox().z1());
+        if (FabricLoader.getInstance().isModLoaded("dynmap")) {
+            ServerLifecycleEvents.SERVER_STARTED.register(DynmapCompat::init);
+        }
 
-                var maxX = ChunkSectionPos.getSectionCoord(x.getKey().toBox().x2());
-                var maxZ = ChunkSectionPos.getSectionCoord(x.getKey().toBox().z2());
-
-                return (minX <= chunk.getPos().x && maxX >= chunk.getPos().x && minZ <= chunk.getPos().z && maxZ >= chunk.getPos().z);
-            }).forEach(x -> x.getValue().internal_incrementChunks());
-        });
-
-        ServerChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> {
-            CLAIM.get(world).getClaims().entries().filter(x -> {
-                var minX = ChunkSectionPos.getSectionCoord(x.getKey().toBox().x1());
-                var minZ = ChunkSectionPos.getSectionCoord(x.getKey().toBox().z1());
-
-                var maxX = ChunkSectionPos.getSectionCoord(x.getKey().toBox().x2());
-                var maxZ = ChunkSectionPos.getSectionCoord(x.getKey().toBox().z2());
-
-                return (minX <= chunk.getPos().x && maxX >= chunk.getPos().x && minZ <= chunk.getPos().z && maxZ >= chunk.getPos().z);
-            }).forEach(x -> x.getValue().internal_decrementChunks());
-        });
+        ServerChunkEvents.CHUNK_LOAD.register((world, server) -> GetOffMyLawn.onChunkEvent(world, server, Claim::internal_incrementChunks));
+        ServerChunkEvents.CHUNK_UNLOAD.register((world, server) -> GetOffMyLawn.onChunkEvent(world, server, Claim::internal_decrementChunks));
     }
 
     @Override
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
         registry.register(CLAIM, WorldClaimComponent::new);
+    }
+
+    private static void onChunkEvent(ServerWorld world, WorldChunk chunk, Consumer<Claim> chunkHandler) {
+        CLAIM.get(world).getClaims().entries().filter(x -> {
+            var minX = ChunkSectionPos.getSectionCoord(x.getKey().toBox().x1());
+            var minZ = ChunkSectionPos.getSectionCoord(x.getKey().toBox().z1());
+
+            var maxX = ChunkSectionPos.getSectionCoord(x.getKey().toBox().x2());
+            var maxZ = ChunkSectionPos.getSectionCoord(x.getKey().toBox().z2());
+
+            return (minX <= chunk.getPos().x && maxX >= chunk.getPos().x && minZ <= chunk.getPos().z && maxZ >= chunk.getPos().z);
+        }).forEach(x -> chunkHandler.accept(x.getValue()));
     }
 }
