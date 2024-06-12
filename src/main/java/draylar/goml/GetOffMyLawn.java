@@ -53,7 +53,7 @@ public class GetOffMyLawn implements ModInitializer, WorldComponentInitializer {
     public static GOMLConfig CONFIG = new GOMLConfig();
 
     public static Identifier id(String name) {
-        return new Identifier("goml", name);
+        return Identifier.of("goml", name);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class GetOffMyLawn implements ModInitializer, WorldComponentInitializer {
 
         PolymerItemGroupUtils.registerPolymerItemGroup(id("group"), GROUP);
 
-        CommonProtection.register(new Identifier("goml", "claim_protection"), GomlProtectionProvider.INSTANCE);
+        CommonProtection.register(Identifier.of("goml", "claim_protection"), GomlProtectionProvider.INSTANCE);
 
         ServerLifecycleEvents.SERVER_STARTING.register((s) -> {
             CardboardWarning.checkAndAnnounce();

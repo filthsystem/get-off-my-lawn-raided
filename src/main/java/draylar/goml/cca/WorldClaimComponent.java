@@ -7,6 +7,7 @@ import draylar.goml.api.ClaimBox;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +37,7 @@ public class WorldClaimComponent implements ClaimComponent {
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {
         this.claims = RTreeMap.create(new ConfigurationBuilder().star().build(), ClaimBox::rtree3iBox);
         var world = this.world.getRegistryKey().getValue();
 
@@ -72,7 +73,7 @@ public class WorldClaimComponent implements ClaimComponent {
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup) {
         NbtList nbtListClaims = new NbtList();
         tag.putInt("Version", 1);
 

@@ -326,7 +326,7 @@ public class Claim {
     }
 
     public Identifier getWorld() {
-        return this.world != null ? this.world : new Identifier("undefined");
+        return this.world != null ? this.world : Identifier.of("undefined");
     }
 
     @Nullable

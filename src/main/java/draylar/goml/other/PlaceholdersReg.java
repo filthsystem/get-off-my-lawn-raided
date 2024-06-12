@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @ApiStatus.Internal
 public class PlaceholdersReg {
     public static void init() {
-        Placeholders.register(new Identifier("goml", "claim_owners"), (ctx, arg) -> {
+        Placeholders.register(Identifier.of("goml", "claim_owners"), (ctx, arg) -> {
             if (!ctx.hasPlayer()) {
                 return PlaceholderResult.invalid("No player!");
             }
@@ -47,7 +47,7 @@ public class PlaceholdersReg {
             }
         });
 
-        Placeholders.register(new Identifier("goml", "claim_owners"), (ctx, arg) -> {
+        Placeholders.register(Identifier.of("goml", "claim_owners"), (ctx, arg) -> {
             if (!ctx.hasPlayer()) {
                 return PlaceholderResult.invalid("No player!");
             }
@@ -78,7 +78,7 @@ public class PlaceholdersReg {
             }
         });
 
-        Placeholders.register(new Identifier("goml", "claim_trusted"), (ctx, arg) -> {
+        Placeholders.register(Identifier.of("goml", "claim_trusted"), (ctx, arg) -> {
             if (!ctx.hasPlayer()) {
                 return PlaceholderResult.invalid("No player!");
             }
@@ -110,7 +110,7 @@ public class PlaceholdersReg {
             }
         });
 
-        Placeholders.register(new Identifier("goml", "claim_trusted_uuid"), (ctx, arg) -> {
+        Placeholders.register(Identifier.of("goml", "claim_trusted_uuid"), (ctx, arg) -> {
             if (!ctx.hasPlayer()) {
                 return PlaceholderResult.invalid("No player!");
             }
@@ -142,7 +142,7 @@ public class PlaceholdersReg {
             }
         });
 
-        Placeholders.register(new Identifier("goml", "claim_info"), (ctx, arg) -> {
+        Placeholders.register(Identifier.of("goml", "claim_info"), (ctx, arg) -> {
             if (!ctx.hasPlayer()) {
                 return PlaceholderResult.invalid("No player!");
             }

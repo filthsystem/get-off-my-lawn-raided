@@ -5,6 +5,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ShapedRecipeMixin {
     @Shadow @Final private ItemStack result;
 
-    @Inject(method = "matches(Lnet/minecraft/inventory/RecipeInputInventory;Lnet/minecraft/world/World;)Z", at = @At("HEAD"), cancellable = true)
-    private void goml_cancelIfDisabled(RecipeInputInventory recipeInputInventory, World world, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "matches(Lnet/minecraft/recipe/input/CraftingRecipeInput;Lnet/minecraft/world/World;)Z", at = @At("HEAD"), cancellable = true)
+    private void goml_cancelIfDisabled(CraftingRecipeInput craftingRecipeInput, World world, CallbackInfoReturnable<Boolean> cir) {
         if (this.result.getItem() instanceof ToggleableBlockItem item && !item.isEnabled()) {
             cir.setReturnValue(false);
         }

@@ -13,11 +13,12 @@ import draylar.goml.block.entity.ClaimAnchorBlockEntity;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -149,14 +150,12 @@ public class UpgradeKitItem extends Item implements PolymerItem {
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-        return this.clientItem;
+    public boolean hasGlint(ItemStack stack) {
+        return true;
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipType context, @Nullable ServerPlayerEntity player) {
-        var clientStack = PolymerItem.super.getPolymerItemStack(itemStack, context, player);
-        clientStack.addEnchantment(Enchantments.LURE, 68);
-        return clientStack;
+    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+        return this.clientItem;
     }
 }

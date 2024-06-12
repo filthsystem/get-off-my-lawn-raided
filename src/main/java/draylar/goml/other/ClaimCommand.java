@@ -19,6 +19,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
@@ -183,12 +184,12 @@ public class ClaimCommand {
                     y = player.getWorld().getTopY(Heightmap.Type.MOTION_BLOCKING, (int) pos.x, (int) pos.z);
                 }
 
-                player.teleport(pos.x, y, pos.z);
+                player.teleport(pos.x, y, pos.z, true);
 
                 player.setVelocity(Vec3d.of(dir.getVector()).multiply(0.2));
 
                 if (player.hasVehicle()) {
-                    player.getVehicle().teleport(pos.x, y, pos.z);
+                    player.getVehicle().teleport((ServerWorld) player.getVehicle().getWorld(), pos.x, y, pos.z, PositionFlag.VALUES, player.getVehicle().getYaw(), player.getVehicle().getPitch());
                     player.getVehicle().setVelocity(Vec3d.of(dir.getVector()).multiply(0.2));
                 }
 

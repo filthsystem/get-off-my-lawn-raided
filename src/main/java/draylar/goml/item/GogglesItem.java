@@ -5,11 +5,11 @@ import draylar.goml.api.ClaimUtils;
 import draylar.goml.api.WorldParticleUtils;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
@@ -57,14 +57,12 @@ public class GogglesItem extends ArmorItem implements PolymerItem {
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-        return Items.IRON_HELMET;
+    public boolean hasGlint(ItemStack stack) {
+        return true;
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipType context, @Nullable ServerPlayerEntity player) {
-        var clientStack = PolymerItem.super.getPolymerItemStack(itemStack, context, player);
-        clientStack.addEnchantment(Enchantments.LURE, 64);
-        return clientStack;
+    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+        return Items.IRON_HELMET;
     }
 }
