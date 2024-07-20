@@ -325,7 +325,7 @@ public class ClaimUtils {
         ).formatted(Formatting.YELLOW));
 
         if (!owners.isEmpty()) {
-            texts.add(Text.translatable("text.goml.owners", owners.remove(0)).formatted(Formatting.GOLD));
+            texts.add(Text.translatable("text.goml.owners", owners.removeFirst()).formatted(Formatting.GOLD));
 
             for (var text : owners) {
                 texts.add(Text.literal("   ").append(text));
@@ -333,7 +333,7 @@ public class ClaimUtils {
         }
 
         if (!trusted.isEmpty()) {
-            texts.add(Text.translatable("text.goml.trusted", trusted.remove(0)).formatted(Formatting.GREEN));
+            texts.add(Text.translatable("text.goml.trusted", trusted.removeFirst()).formatted(Formatting.GREEN));
 
             for (var text : trusted) {
                 texts.add(Text.literal("   ").append(text));

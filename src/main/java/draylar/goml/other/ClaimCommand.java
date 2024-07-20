@@ -350,7 +350,7 @@ public class ClaimCommand {
         if (!world.isClient()) {
             ClaimUtils.getClaimsAt(world, player.getBlockPos()).forEach(claimedArea -> {
                 claimedArea.getValue().destroy();
-                player.sendMessage(prefix(Text.translatable("text.goml.command.removed_claim", world.getRegistryKey().getValue(), claimedArea.getValue().getOrigin())), false);
+                player.sendMessage(prefix(Text.translatable("text.goml.command.removed_claim", world.getRegistryKey().getValue(), claimedArea.getValue().getOrigin().toShortString())), false);
                 var blockEntity = world.getBlockEntity(claimedArea.getValue().getOrigin(), GOMLEntities.CLAIM_ANCHOR);
 
                 if (blockEntity.isPresent()) {

@@ -559,12 +559,14 @@ public class Claim {
             return Collections.emptyList();
         }
 
-        return world.getEntitiesByClass(ServerPlayerEntity.class, this.getClaimBox().minecraftBox(), entity -> true);
+        var box = this.claimBox.minecraftBox();
+        return world.getPlayers(x -> x.getBoundingBox().intersects(box));
     }
 
     public void tick(ServerWorld world) {
         if (this.chunksLoadedCount > 0) {
-            var playersInClaim = world.getEntitiesByClass(PlayerEntity.class, this.claimBox.minecraftBox(), entity -> true);
+            var box = this.claimBox.minecraftBox();
+            var playersInClaim = world.getPlayers(x -> x.getBoundingBox().intersects(box));
 
             // Tick all augments
             for (var augment : this.augments.values()) {
@@ -586,7 +588,11 @@ public class Claim {
                     }
 
                     // Tick exit behavior
-                    this.previousTickPlayers.stream().filter(player -> !playersInClaim.contains(player)).forEach(player -> augment.onPlayerExit(this, player));
+                    for (var player : this.previousTickPlayers) {
+                        if (!playersInClaim.contains(player)) {
+                            augment.onPlayerExit(this, player);
+                        }
+                    }
                 }
             }
 
