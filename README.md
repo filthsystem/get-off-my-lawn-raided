@@ -1,16 +1,18 @@
-# Get Off My Lawn ReServed
+# Get Off My Lawn Raided
 
-*Get Off My Lawn ReServed* is a take on the popular concept of player claims for Survival/Freebuild Fabric servers. 
-This mod works fully server side (no client mod required!) while being compatible with major Fabric modpacks
+*Get Off My Lawn Raided* is a take on the popular concept of player claims for Survival/Freebuild Fabric servers with a
+twist: fire, TNT, fluids, dispensers, pistons, etc. can all be used to grief. All survival-obtainable blocks can also
+now be destroyed by explosions. This mod works fully server side (no client mod required!) while being compatible with
+major Fabric modpacks.
 
-This project is a fork [Get Off My Lawn by Draylar](https://github.com/Draylar/get-off-my-lawn), with focus on improving and building on top of the original.
+This project is a fork of [Get Off My Lawn ReServed by PatBox](https://github.com/patbox/get-off-my-lawn-reserved), a
+fork of [Get Off My Lawn by Draylar](https://github.com/Draylar/get-off-my-lawn). We've chosen to focus on increasing
+mayhem in a controlled manner.
 
-
-# Video Showcase
-
-* English: https://youtu.be/R9-PuMRbNEc
-
-* Polish: https://youtu.be/1V8kh0h3NoU
+## Todo:
+* Add sieges, where players may occupy an area within close proximity (5 blocks) of a claim for a period of time
+  determined by the number of players on the claim and the size of the claim. Upon reaching this time limit, claims will
+  break/be able to be broken.
 
 # Getting started
 
@@ -104,4 +106,4 @@ You can find config file in `./config/getoffmylawn.json`. To reload it, just typ
 
 
 ## License
-*Get Off My Lawn ReServed* is available under the MIT license. The project, code, and assets found in this repository are available for free public use (as long as credited).
+*Get Off My Lawn Raided* is available under the MIT license. The project, code, and assets found in this repository are available for free public use (as long as credited).

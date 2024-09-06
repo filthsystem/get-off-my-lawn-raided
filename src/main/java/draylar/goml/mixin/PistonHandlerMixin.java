@@ -2,6 +2,7 @@ package draylar.goml.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import draylar.goml.api.ClaimUtils;
+import draylar.goml.registry.GOMLBlocks;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -57,10 +58,10 @@ public class PistonHandlerMixin {
         for (var pos : blocks) {
             var claims = ClaimUtils.getClaimsAt(this.world, pos);
 
-            boolean firstFound = true;
+            boolean firstFound = !claims.isEmpty() || !this.claimsEmpty;
 
-            if (claims.isEmpty() && this.claimsEmpty) {
-                firstFound = false;
+            if (!claims.anyMatch((c) -> c.getValue().getType().equals(GOMLBlocks.ADMIN_CLAIM_ANCHOR.getFirst()))) {
+                continue;
             }
 
             if (firstFound && claims.noneMatch(x -> x.getValue().hasPermission(this.trusted))) {

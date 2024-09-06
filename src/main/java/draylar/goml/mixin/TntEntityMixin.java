@@ -35,6 +35,10 @@ public abstract class TntEntityMixin extends Entity {
             Selection<Entry<ClaimBox, Claim>> claimsFound = ClaimUtils.getClaimsAt(getWorld(), getBlockPos());
 
             if (!claimsFound.isEmpty()) {
+                if (ClaimUtils.isNotAdminClaim(getWorld(), getBlockPos())) {
+                    return;
+                }
+
                 boolean noPermission = claimsFound.anyMatch((Entry<ClaimBox, Claim> boxInfo) -> !boxInfo.getValue().hasPermission((PlayerEntity) causingEntity));
 
                 if(noPermission) {

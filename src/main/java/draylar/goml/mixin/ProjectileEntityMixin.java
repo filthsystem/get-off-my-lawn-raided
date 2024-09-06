@@ -1,13 +1,9 @@
 package draylar.goml.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.sugar.Local;
 import draylar.goml.api.ClaimUtils;
 import draylar.goml.other.OriginOwner;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -32,14 +28,14 @@ public abstract class ProjectileEntityMixin extends Entity implements OriginOwne
 
     @Inject(method = "onCollision", at = @At("HEAD"), cancellable = true)
     private void preventEffects(HitResult hitResult, CallbackInfo ci) {
-        if (!ClaimUtils.hasMatchingClaims(this.getWorld(), this.getBlockPos(), this.goml$getOriginSafe(), this.ownerUuid)) {
+        if (!ClaimUtils.isNotAdminClaim(this.getWorld(), this.getBlockPos()) && !ClaimUtils.hasMatchingClaims(this.getWorld(), this.getBlockPos(), this.goml$getOriginSafe(), this.ownerUuid)) {
             ci.cancel();
         }
     }
 
     @Inject(method = "canModifyAt", at = @At("HEAD"), cancellable = true)
     private void preventModification(World world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (!ClaimUtils.hasMatchingClaims(this.getWorld(), this.getBlockPos(), this.goml$getOriginSafe(), this.ownerUuid)) {
+        if (!ClaimUtils.isNotAdminClaim(this.getWorld(), this.getBlockPos()) && !ClaimUtils.hasMatchingClaims(this.getWorld(), this.getBlockPos(), this.goml$getOriginSafe(), this.ownerUuid)) {
             cir.setReturnValue(false);
         }
     }

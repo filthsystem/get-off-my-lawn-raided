@@ -2,15 +2,16 @@
   "schemaVersion": 1,
   "id": "goml",
   "version": "${version}",
-  "name": "Get Off My Lawn ReServed",
-  "description": "Keep people off your lawn with claims!",
+  "name": "Get Off My Lawn Raided",
+  "description": "Keep (some) people off your lawn with claims!",
   "authors": [
-    "Patbox",
+    "Tobi",
+    "Patbox (ReServed fork)",
     "Draylar (Original author)"
   ],
   "contact": {
-    "homepage": "https://pb4.eu",
-    "sources": "https://github.com/Patbox/get-off-my-lawn-reserved"
+    "homepage": "https://filthsystem.com",
+    "sources": "https://github.com/filthsystem/get-off-my-lawn-raided"
   },
   "license": "MIT",
   "icon": "assets/goml/icon.png",

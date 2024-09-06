@@ -6,11 +6,9 @@ import com.jamieswhiteshirt.rtree3i.Selection;
 import draylar.goml.EventHandlers;
 import draylar.goml.GetOffMyLawn;
 import draylar.goml.api.event.ClaimEvents;
-import draylar.goml.block.augment.ExplosionControllerAugmentBlock;
 import draylar.goml.block.entity.ClaimAnchorBlockEntity;
 import draylar.goml.other.GomlPlayer;
 import draylar.goml.other.OriginOwner;
-import draylar.goml.other.StatusEnum;
 import draylar.goml.registry.GOMLBlocks;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.block.BlockState;
@@ -120,17 +118,17 @@ public class ClaimUtils {
         return GetOffMyLawn.CLAIM.get(world).getClaims().entries(box -> box.intersectsClosed(checkBox));
     }
 
-    public static Selection<Entry<ClaimBox, Claim>> getClaimsInOpenBox(WorldView world, Box checkBox) {
+    /*public static Selection<Entry<ClaimBox, Claim>> getClaimsInOpenBox(WorldView world, Box checkBox) {
         return GetOffMyLawn.CLAIM.get(world).getClaims().entries(box -> box.intersectsOpen(checkBox));
-    }
+    }*/
 
     public static Selection<Entry<ClaimBox, Claim>> getClaimsInDimension(WorldView world) {
         return GetOffMyLawn.CLAIM.get(world).getClaims().entries(a -> true);
     }
 
-    public static Box createBox(int x1, int y1, int z1, int x2, int y2, int z2) {
+    /*public static Box createBox(int x1, int y1, int z1, int x2, int y2, int z2) {
         return Box.create(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2), Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
-    }
+    }*/
 
     public static Box createBox(BlockPos pos1, BlockPos pos2) {
         return Box.create(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()), Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
@@ -177,20 +175,39 @@ public class ClaimUtils {
         return Permissions.check(player, "goml.modify_others", 3) && (player instanceof GomlPlayer adminModePlayer && adminModePlayer.goml_getAdminMode());
     }
 
+    public static boolean isNotAdminClaim(World world, BlockPos pos) {
+        Selection<Entry<ClaimBox, Claim>> claimsFound = ClaimUtils.getClaimsAt(world, pos);
+
+        return claimsFound.isEmpty() || claimsFound.anyMatch((c) -> {
+            if (world.getServer() != null) {
+                return !c.getValue().getType().equals(GOMLBlocks.ADMIN_CLAIM_ANCHOR.getFirst());
+            }
+
+            return true;
+        });
+    }
+
     public static boolean canFireDestroy(World world, BlockPos pos) {
-        return ClaimUtils.getClaimsAt(world, pos).isEmpty();
+        if (!ClaimUtils.getClaimsAt(world, pos).isEmpty()) {
+            return ClaimUtils.isNotAdminClaim(world, pos);
+        }
+
+        return true;
     }
 
     public static boolean canFluidFlow(World world, BlockPos cur, BlockPos dest) {
         var claimsDest = ClaimUtils.getClaimsAt(world, dest);
         var claimsCur = ClaimUtils.getClaimsAt(world, cur);
+        if (ClaimUtils.isNotAdminClaim(world, dest)) {
+            return true;
+        }
         return claimsDest.isEmpty() || claimsCur.anyMatch(x -> claimsCur.anyMatch(y -> x.equals(y)));
     }
 
     public static boolean canExplosionDestroy(World world, BlockPos pos, @Nullable Entity causingEntity) {
-        Selection<Entry<ClaimBox, Claim>> claimsFound = ClaimUtils.getClaimsAt(world, pos);
+        //Selection<Entry<ClaimBox, Claim>> claimsFound = ClaimUtils.getClaimsAt(world, pos);
 
-        PlayerEntity player;
+        /*PlayerEntity player;
 
         if (causingEntity instanceof PlayerEntity playerEntity) {
             player = playerEntity;
@@ -212,7 +229,8 @@ public class ClaimUtils {
             }
 
             return false;
-        });
+        });*/
+        return isNotAdminClaim(world, pos);
     }
 
     public static boolean canDamageEntity(World world, Entity entity, DamageSource source) {
@@ -350,7 +368,7 @@ public class ClaimUtils {
         return texts;
     }
 
-    protected static final List<Text> getPlayerNames(MinecraftServer server, Collection<UUID> uuids) {
+    protected static List<Text> getPlayerNames(MinecraftServer server, Collection<UUID> uuids) {
         var list = new ArrayList<Text>();
 
         var builder = new StringBuilder();
@@ -400,9 +418,9 @@ public class ClaimUtils {
         return new ClaimBox(pos, radius, GetOffMyLawn.CONFIG.claimProtectsFullWorldHeight ? Short.MAX_VALUE : (int) (radius * GetOffMyLawn.CONFIG.claimAreaHeightMultiplier));
     }
 
-    public static Pair<Vec3d, Direction> getClosestXZBorder(Claim claim, Vec3d curPos) {
+    /*public static Pair<Vec3d, Direction> getClosestXZBorder(Claim claim, Vec3d curPos) {
         return getClosestXZBorder(claim, curPos, 0);
-    }
+    }*/
 
     public static Pair<Vec3d, Direction> getClosestXZBorder(Claim claim, Vec3d curPos, double extraDistance) {
         var box = claim.getClaimBox();
